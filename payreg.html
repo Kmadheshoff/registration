@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Event Registration</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #0d0d0d, #e62429);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px;
+      overflow: hidden;  /* disables scrolling */
+    }
+.character {
+  position: absolute;
+  width: 160px;
+  opacity: 0.8;
+  z-index: 0;
+  pointer-events: none;
+  transform-origin: center;
+}
+
+/* Right Zig-Zag */
+@keyframes zigzagRight {
+  0%   { transform: translate(-200px, 0); }
+  25%  { transform: translate(20vw, -60px); }
+  50%  { transform: translate(50vw, 80px); }
+  75%  { transform: translate(80vw, -40px); }
+  100% { transform: translate(120vw, 0); }
+}
+
+/* Left Zig-Zag with Vertical Drift */
+@keyframes zigzagLeft {
+  0%   { transform: translate(200px, 0); }
+  25%  { transform: translate(-20vw, 70px); }
+  50%  { transform: translate(-50vw, -90px); }
+  75%  { transform: translate(-80vw, 50px); }
+  100% { transform: translate(-120vw, 0); }
+}
+
+/* Upward Zig-Zag */
+@keyframes zigzagUp {
+  0%   { transform: translate(0, 100vh); }
+  25%  { transform: translate(-60px, 75vh); }
+  50%  { transform: translate(80px, 50vh); }
+  75%  { transform: translate(-40px, 25vh); }
+  100% { transform: translate(0, -200px); }
+}
+
+/* Downward Zig-Zag */
+@keyframes zigzagDown {
+  0%   { transform: translate(0, -200px); }
+  25%  { transform: translate(60px, 25vh); }
+  50%  { transform: translate(-80px, 50vh); }
+  75%  { transform: translate(40px, 75vh); }
+  100% { transform: translate(0, 110vh); }
+}
+
+/* Diagonal Random Path */
+@keyframes zigzagDiagonal {
+  0%   { transform: translate(-200px, -200px); }
+  20%  { transform: translate(20vw, 20vh); }
+  40%  { transform: translate(40vw, -10vh); }
+  60%  { transform: translate(60vw, 40vh); }
+  80%  { transform: translate(80vw, -20vh); }
+  100% { transform: translate(120vw, 100vh); }
+}
+
+/* Neon Lightning Bolt */
+.lightning-strike {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  width: 3px;
+  height: 100vh;
+  background: linear-gradient(to bottom, #ffffff 0%, #00c3ff 40%, transparent 100%);
+  opacity: 0;
+  transform: translateX(-50%) skewX(-10deg);
+  box-shadow: 0 0 15px #00c3ff, 0 0 30px #ffffff, 0 0 60px #00c3ff;
+  animation: lightningRay 6s infinite;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Branching jagged effect */
+.lightning-strike::before,
+.lightning-strike::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 80%;
+  background: linear-gradient(to bottom, #ffffff, #00c3ff, transparent);
+  top: 25%;
+  opacity: 0.8;
+  box-shadow: 0 0 10px #00c3ff, 0 0 25px #ffffff;
+    z-index: 20;
+}
+
+.lightning-strike::before {
+  left: -25px;
+  transform: rotate(-25deg);
+}
+
+.lightning-strike::after {
+  left: 25px;
+  transform: rotate(25deg);
+}
+
+/* Strike flash animation */
+@keyframes lightningRay {
+  0%, 95%, 100% { opacity: 0; }
+  2% { opacity: 1; }
+  3% { opacity: 0.4; }
+  4% { opacity: 1; }
+  6% { opacity: 0; }
+}
+/* Lightning Flash Effect */
+@keyframes lightningFlash {
+  0%, 20%, 100% { background: rgba(0,0,0,0); }
+  5% { background: rgba(0,200,255,0.3); }
+  15% { background: rgba(255,255,255,0.2); }
+}
+
+.thunderstorm {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  animation: lightningFlash 6s infinite;
+  z-index: 10;
+  pointer-events: none;
+}
+
+
+/* Spark Container */
+.spark-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1; /* background */
+  overflow: hidden;
+}
+
+/* Each Spark */
+.spark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 30%, #00c3ff 100%);
+  box-shadow: 0 0 10px #00c3ff, 0 0 20px #ffffff;
+  opacity: 0;
+  animation: sparkFlash 2s infinite;
+}
+
+/* Spark Flicker + Scatter */
+@keyframes sparkFlash {
+  0%   { opacity: 0; transform: scale(0.5) translateY(0); }
+  10%  { opacity: 1; transform: scale(1.2) translateY(-10px); }
+  20%  { opacity: 0.8; transform: scale(0.8) translateY(-20px) translateX(5px); }
+  30%  { opacity: 1; transform: scale(1) translateY(-30px) translateX(-5px); }
+  40%  { opacity: 0.5; transform: scale(0.7) translateY(-40px); }
+  50%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Assign to Characters */
+.ironman {
+  top: 10%;
+  animation: zigzagRight 20s linear infinite;
+}
+
+.spiderman {
+  top: 30%;
+  animation: zigzagLeft 24s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.thor {
+  left: 10%;
+  animation: zigzagUp 28s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.captain {
+  right: 10%;
+  animation: zigzagDown 26s ease-in-out infinite;
+  animation-delay: 0s;
+  opacity: 0.9;
+}
+
+.hulk {
+  bottom: 12%;
+  animation: zigzagDiagonal 32s linear infinite;
+  animation-delay: 0s;
+  opacity: 0.7;
+}
+
+
+
+    h2 {
+      margin-bottom: 20px;
+      color: #e62429;
+      font-weight: 700;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 12px;
+      font-weight: 500;
+      color: #e62429;
+    }
+
+    input[type="text"], input[type="email"], input[type="file"] {
+      width: 95%;
+      padding: 10px;
+    background-color: #ccc;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    input:focus {
+      border-color: #2980b9;
+    }
+
+    button, .pay-btn {
+      background: #3498db;
+      border: none;
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 18px;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    button:hover, .pay-btn:hover {
+      background: #2d81bd;
+    }
+
+    .payment-box {
+      margin-top: 20px;
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #qrcode {
+      margin: 20px auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Overlay Loader */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      display: none;
+      z-index: 1000;
+    }
+
+    .loader-box {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Circle progress */
+    .progress-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 10px solid rgba(255,255,255,0.4);
+      border-top-color: #3498db;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { 
+      100% { transform: rotate(360deg); } 
+    }
+
+    /* Success tick */
+    .success-check {
+      display: none;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgb(99, 255, 107);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pop 0.3s ease-out forwards;
+    }
+
+    .success-check svg {
+      width: 60px;
+      height: 60px;
+      stroke: #ffffff;
+      stroke-width: 6;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+   @media screen and (max-width: 480px) {
+  
+  .form-container {
+    padding: 15px 10px;
+    margin-top: 10px;
+    margin: 20px;
+    
+    width: 80%;
+    max-width: fit-content;
+    border-radius: 12px;
+  }
+
+  h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  label {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  input[type="text"], input[type="email"], input[type="file"] {
+    font-size: 14px;
+    padding: 10px;
+    margin-top: 6px;
+    margin-right: 15px;
+  }
+
+  button, .pay-btn {
+    font-size: 16px;
+    padding: 12px;
+    margin-top: 15px;
+  }
+
+  /* Checkbox and radio alignment */
+  label input[type="radio"], label input[type="checkbox"] {
+    transform: scale(1.3);
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+
+  #qrcode {
+    margin: 15px auto;
+    width: 100%;
+  }
+}
+
+    /* Checkbox and radio alignment */
+    label input[type="radio"], label input[type="checkbox"] {
+      transform: scale(1.3);
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .eventChk {
+      margin-top: 10px;
+    }
+.background-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(0px);
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Form */
+   .form-container {
+  background: rgba(0, 0, 0, 0.9);
+  padding: 30px 20px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  width: 90%;          /* take most of the screen on mobile */
+  max-width: 420px; 
+  height: 75%;   /* don’t grow too wide on big screens */
+  border: 3px solid #ffcc00;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  
+
+  max-height: 90vh;     /* fit in screen */
+  overflow-y: auto;     /* scrolling works */
+  
+  /* Hide scrollbar */
+  -ms-overflow-style: none;  /* IE, Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.form-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+
+.background-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0; /* very back */
+}
+
+  </style>
+</head>
+<body>
+  <div class="background-container">
+  <div class="thunderstorm"></div>
+<div class="lightning-strike"></div>
+
+  <img src="iron-removebg-preview.png" class="character ironman" alt="Iron Man">
+  <img src="spider-removebg-preview.png" class="character spiderman" alt="Spider-Man">
+  <img src="thor-removebg-preview.png" class="character thor" alt="Thor">
+  <img src="thorman-removebg-preview.png" class="character captain" alt="Captain America">
+  <img src="hluk-removebg-preview.png" class="character hulk" alt="Hulk">
+
+<div class="spark-container">
+  <div class="spark" style="top: 60%; left: 50%; animation-delay: 0s;"></div>
+  <div class="spark" style="top: 62%; left: 52%; animation-delay: 0.5s;"></div>
+  <div class="spark" style="top: 63%; left: 48%; animation-delay: 1s;"></div>
+  <div class="spark" style="top: 65%; left: 51%; animation-delay: 1.5s;"></div>
+</div>
+  </div>
+  <div class="background-overlay">
+  <div class="form-container">
+    <h2>Registration Form</h2>
+    <form id="regForm">
+      <label>Name:</label><input type="text" name="name" required>
+      <label>College:</label><input type="text" name="college" required>
+      <label>Year:</label>
+      <label><input type="radio" name="year" value="I" required> I</label>
+      <label><input type="radio" name="year" value="II"> II</label>
+      <label><input type="radio" name="year" value="III"> III</label>
+      <label><input type="radio" name="year" value="IV"> IV</label>
+      <label>Department:</label><input type="text" name="department" required>
+            <label>Events (Select Max 2):</label>
+<label><input type="checkbox" name="event" value="Paper Presentation" class="eventChk"> Paper Presentation</label>
+<label><input type="checkbox" name="event" value="Hunt Quest" class="eventChk"> Hunt Quest</label>
+<label><input type="checkbox" name="event" value="Prompt Protocol" class="eventChk"> Prompt Protocol</label>
+<label><input type="checkbox" name="event" value="Case 404" class="eventChk"> Case 404</label>
+<label><input type="checkbox" name="event" value="Code in Borderland" class="eventChk"> Code in Borderland</label>
+
+      <label>Email:</label><input type="email" name="email" required>
+      <label>Phone:</label><input type="text" name="phone" required>
+
+      <button type="button" id="proceedBtn">Proceed to Payment</button>
+
+      <!-- Payment Section -->
+      <div class="payment-box" id="paymentBox">
+        <h3 style="color: #ffffff;">Pay ₹150 to Complete Registration</h3>
+        <div id="qrcode"></div>
+       <p id="paymentText" style="color: #ffffff;">Scan the QR code or click the button below to Download QR & Pay:</p>
+        <button type="button" id="downloadQrBtn" class="pay-btn" style="background:#2ecc71; margin-top:10px;">Download QR Code</button>
+
+        <label>Upload Payment Screenshot:</label>
+        <input type="file" id="screenshot" name="screenshot" accept="image/*" required>
+        <button type="submit">Submit Registration</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Overlay loader -->
+  <div class="overlay" id="overlay"> 
+    <div class="loader-box">
+      <div class="progress-circle" id="progress"> </div>
+      <div class="success-check" id="success">
+        <svg viewBox="0 0 52 52">
+          <path d="M14 27l7 7 17-17"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <script>
+    const checkboxes = document.querySelectorAll('.eventChk');
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      let checked = document.querySelectorAll('.eventChk:checked');
+      if (checked.length > 2) {
+        cb.checked = false;
+        alert("You can select maximum 2 events only!");
+      }
+    });
+  });
+  const form = document.getElementById("regForm");
+  const paymentBox = document.getElementById("paymentBox");
+  const payBtn = document.getElementById("payBtn");
+  const proceedBtn = document.getElementById("proceedBtn");
+
+  const overlay = document.getElementById("overlay");
+  const progress = document.getElementById("progress");
+  const success = document.getElementById("success");
+
+  proceedBtn.addEventListener("click", () => {
+    const upiId = "kmadhesh1017@okicici";
+    const amount = 150;
+    const name = "Madhesh K";
+    const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
+
+    paymentBox.style.display = "block";
+    proceedBtn.style.display = "none";
+
+    document.getElementById("qrcode").innerHTML = "";
+    new QRCode(document.getElementById("qrcode"), {
+      text: upiUrl, width: 180, height: 180
+    });
+    payBtn.href = upiUrl;
+  });
+
+  form.addEventListener("submit", async function(e){
+    e.preventDefault();
+    const fileInput = document.getElementById("screenshot").files[0];
+    if (!fileInput) {
+      alert("Please upload payment screenshot before submitting!");
+      return;
+    }
+
+    const formData = new FormData(form);
+    const base64 = await toBase64(fileInput);
+    formData.append("filename", fileInput.name);
+    formData.append("mimetype", fileInput.type);
+    formData.append("screenshot", base64.split(",")[1]);
+
+    overlay.style.display = "flex";
+    progress.style.display = "block";
+    success.style.display = "none";
+
+    fetch("https://script.google.com/macros/s/AKfycbyran97_F8IB_817KSI5Y_288vQLcdXtHw-bZ5tsr8RVZO6hqQH4jW6xg5yiCjGi7zD9Q/exec", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.text())
+    .then(data => {
+      progress.style.display = "none";
+      success.style.display = "flex";
+      setTimeout(() => {
+        overlay.style.display = "none";
+        alert("Registration Successful ✅ Check your mail for confirmation.");
+        form.reset();
+        paymentBox.style.display = "none";
+        proceedBtn.style.display = "block";
+      }, 1500);
+    })
+    .catch(err => {
+      overlay.style.display = "none";
+      alert("Upload failed: " + err);
+    });
+  });
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+const downloadQrBtn = document.getElementById('downloadQrBtn');
+
+downloadQrBtn.addEventListener('click', () => {
+  // Get the canvas element inside QRCode container
+  const qrCanvas = document.querySelector('#qrcode canvas');
+
+  if(qrCanvas){
+    // Convert canvas to data URL
+    const dataUrl = qrCanvas.toDataURL('image/png');
+
+    // Create a temporary link and click it
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'event_qrcode.png';  // filename
+    a.click();
+  } else {
+    alert('QR code not generated yet!');
+  }
+});
+
+
+  </script>
+</body>
+</html>

@@ -599,26 +599,41 @@
     });
   }
 const downloadQrBtn = document.getElementById('downloadQrBtn');
+  downloadQrBtn.addEventListener('click', () => {
+    const qrCanvas = document.querySelector('#qrcode canvas');
+    if (!qrCanvas) {
+      alert('QR code not generated yet!');
+      return;
+    }
 
-downloadQrBtn.addEventListener('click', () => {
-  // Get the canvas element inside QRCode container
-  const qrCanvas = document.querySelector('#qrcode canvas');
+    // Create 9:16 canvas
+    const width = 450;   // 9 units
+    const height = 800;  // 16 units
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = width;
+    tempCanvas.height = height;
+    const ctx = tempCanvas.getContext('2d');
 
-  if(qrCanvas){
-    // Convert canvas to data URL
-    const dataUrl = qrCanvas.toDataURL('image/png');
+    // Fill white background
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, width, height);
 
-    // Create a temporary link and click it
+    // Draw QR code centered
+    const qrSize = Math.min(width, height) * 0.5; // QR code 50% of smaller dimension
+    const x = (width - qrSize) / 2;
+    const y = (height - qrSize) / 2;
+    ctx.drawImage(qrCanvas, x, y, qrSize, qrSize);
+
+    // Download image
+    const dataUrl = tempCanvas.toDataURL('image/png');
     const a = document.createElement('a');
     a.href = dataUrl;
-    a.download = 'event_qrcode.png';  // filename
+    a.download = 'event_qrcode.png';
     a.click();
-  } else {
-    alert('QR code not generated yet!');
-  }
-});
+  });
 
 
   </script>
 </body>
 </html>
+

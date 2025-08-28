@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="image.png">
+  <title>Event Registration</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #e62429);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #e62429;
+      font-weight: 700;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 12px;
+      font-weight: 500;
+      color: #e62429;
+    }
+
+    input[type="text"], input[type="email"], input[type="file"] {
+      width: 95%;
+      padding: 10px;
+      background-color: #ccc;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    input:focus {
+      border-color: #2980b9;
+    }
+
+    button {
+      background: #3498db;
+      border: none;
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 18px;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: #2d81bd;
+    }
+
+    .payment-box {
+      margin-top: 20px;
+      display: none;
+      animation: fadeIn 0.4s ease;
+      text-align: left;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    label input[type="radio"], label input[type="checkbox"] {
+      transform: scale(1.3);
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .form-container {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 30px 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      width: 90%;
+      max-width: 420px;
+      border: 3px solid #ffcc00;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      margin-bottom: 40px;
+    }
+
+    .background-overlay {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .banner {
+      width: 100%;
+      max-width: 600px;
+  aspect-ratio: 2879 / 1193; 
+        margin-bottom: 20px;
+    }
+    .banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(5px);
+      display: none;
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loader-box {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .progress-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 10px solid rgba(255,255,255,0.4);
+      border-top-color: #3498db;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { 
+      100% { transform: rotate(360deg); } 
+    }
+
+    .success-check {
+      display: none;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgb(99, 255, 107);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pop 0.3s ease-out forwards;
+    }
+
+    .success-check svg {
+      width: 60px;
+      height: 60px;
+      stroke: #ffffff;
+      stroke-width: 6;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @media screen and (max-width: 480px) {
+      .form-container {
+        padding: 15px 10px;
+        width: 90%;
+      }
+      h2 { font-size: 20px; }
+      label { font-size: 14px; }
+      input[type="text"], input[type="email"], input[type="file"] { font-size: 14px; }
+      button { font-size: 16px; padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="background-overlay">
+
+  <div class="banner">
+    <img src="banner.png" alt="Event Banner">
+  </div>
+
+  <div class="form-container">
+    <h2>Registration Form</h2>
+    <form id="regForm">
+      <label>Name:</label><input type="text" name="name" required>
+      <label>College:</label><input type="text" name="college" required>
+      <label>Year:</label>
+      <label><input type="radio" name="year" value="I" required> I</label>
+      <label><input type="radio" name="year" value="II"> II</label>
+      <label><input type="radio" name="year" value="III"> III</label>
+      <label><input type="radio" name="year" value="IV"> IV</label>
+      <label>Department:</label><input type="text" name="department" required>
+      <label>Events (Select Max 2):</label>
+      <label><input type="checkbox" name="event" value="Prompt Protocol (Technical Luck Based)"> Prompt Protocol (Technical Luck Based)</label>
+      <label><input type="checkbox" name="event" value="Ragnarok Quest (CTF)"> Ragnarok Quest (CTF)</label>
+      <label><input type="checkbox" name="event" value="Arcthesis (Paper Presentation)"> Arcthesis (Paper Presentation)</label>
+      <label><input type="checkbox" name="event" value="Case 404 (Cyber Investigation)"> Case 404 (Cyber Investigation)</label>
+      <label><input type="checkbox" name="event" value="Code in Boderland (Coding Event)"> Code in Boderland (Coding Event)</label>
+      <label>Email:</label><input type="email" name="email" required>
+      <label>Phone:</label><input type="text" name="phone" required>
+
+      <button type="button" id="proceedBtn">Proceed to Payment</button>
+
+      <div class="payment-box" id="paymentBox">
+  <h3 style="color: #ffffff;">Pay ₹150 to Complete Registration</h3>
+  
+  <!-- Bank Details Image -->
+  <canvas id="bankCanvas" width="400" height="300" style="border-radius:12px; display:block; margin:auto;font: 0.5em sans-serif;"></canvas>
+  
+  <p style="color:#ffffff; text-align:center; margin-top:10px;">
+    After transferring ₹150, please upload the payment screenshot below:
+  </p>
+
+  <label>Upload Payment Screenshot:</label>
+  <input type="file" id="screenshot" name="screenshot" accept="image/*" required>
+  <button type="submit">Submit Registration</button>
+</div>
+
+
+<div class="overlay" id="overlay"> 
+  <div class="loader-box">
+    <div class="progress-circle" id="progress"></div>
+    <div class="success-check" id="success">
+      <svg viewBox="0 0 52 52">
+        <path d="M14 27l7 7 17-17"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<script>
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      let checked = document.querySelectorAll('input[type="checkbox"]:checked');
+      if (checked.length > 2) {
+        cb.checked = false;
+        alert("You can select maximum 2 events only!");
+      }
+    });
+  });
+
+  const form = document.getElementById("regForm");
+  const paymentBox = document.getElementById("paymentBox");
+  const proceedBtn = document.getElementById("proceedBtn");
+  const overlay = document.getElementById("overlay");
+  const progress = document.getElementById("progress");
+  const success = document.getElementById("success");
+
+  proceedBtn.addEventListener("click", () => {
+    paymentBox.style.display = "block";
+    proceedBtn.style.display = "none";
+  });
+
+  form.addEventListener("submit", async function(e){
+    e.preventDefault();
+    const fileInput = document.getElementById("screenshot").files[0];
+    if (!fileInput) {
+      alert("Please upload payment screenshot before submitting!");
+      return;
+    }
+
+    const formData = new FormData(form);
+    const base64 = await toBase64(fileInput);
+    formData.append("filename", fileInput.name);
+    formData.append("mimetype", fileInput.type);
+    formData.append("screenshot", base64.split(",")[1]);
+
+    overlay.style.display = "flex";
+    progress.style.display = "block";
+    success.style.display = "none";
+
+    fetch("https://script.google.com/macros/s/AKfycbyran97_F8IB_817KSI5Y_288vQLcdXtHw-bZ5tsr8RVZO6hqQH4jW6xg5yiCjGi7zD9Q/exec", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.text())
+    .then(() => {
+      progress.style.display = "none";
+      success.style.display = "flex";
+      setTimeout(() => {
+        overlay.style.display = "none";
+        alert("Registration Successful ✅ Check your mail for confirmation.");
+        form.reset();
+        paymentBox.style.display = "none";
+        proceedBtn.style.display = "block";
+      }, 1500);
+    })
+    .catch(err => {
+      overlay.style.display = "none";
+      alert("Upload failed: " + err);
+    });
+  });
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+proceedBtn.addEventListener("click", () => {
+  paymentBox.style.display = "block";
+  proceedBtn.style.display = "none";
+
+  const canvas = document.getElementById("bankCanvas");
+  const ctx = canvas.getContext("2d");
+
+  // Background
+  ctx.fillStyle = "#1e1e1e";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Title
+  ctx.fillStyle = "#ffcc00";
+  ctx.font = "bold 16px Poppins"; // smaller than 20px
+  ctx.textAlign = "center";
+  ctx.fillText("SRM VALLIAMMAI ENGINEERING COLLEGE", canvas.width / 2, 35);
+
+  // Subtitle
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "12px Poppins"; // smaller than 14px
+  ctx.fillText("SRM NAGAR KATTANKULATHUR - 603 203", canvas.width / 2, 60);
+
+  // Bank Details
+  ctx.textAlign = "left";
+  ctx.font = "12px Poppins"; // smaller for details
+  const details = [
+    "BANK ACCOUNT DETAILS",
+    "1. NAME OF THE ACCOUNT: VALLIAMMAI ENGINEERING COLLEGE",
+    "2. NAME OF THE BANK: CITY UNION BANK LTD",
+    "3. BANK ACCOUNT NO: 117109000031450",
+    "4. IFSC CODE NO: CIUB0000117",
+    "5. BRANCH: TAMBARAM BRANCH (EXTN COUNTER)",
+    "6. MICR NO: 600054011"
+  ];
+
+  let startY = 85; // adjusted spacing for smaller fonts
+  details.forEach(line => {
+    ctx.fillText(line, 20, startY);
+    startY += 25; // reduce line spacing
+  });
+});
+
+</script>
+</body>
+</html>
